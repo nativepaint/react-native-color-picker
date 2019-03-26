@@ -1,6 +1,7 @@
 # react-native-color-picker
+*Fork of [instea/react-native-color-picker](https://github.com/instea/react-native-color-picker)*
 
-React Native implementation of color picker for both Android and iOS.
+React Native implementation of color picker for both Android and iOS. 
 
 ![android preview](doc/preview_android.png)
 ![iphone preview](doc/preview_iphone.png)
@@ -14,6 +15,10 @@ Install the color picker
 ```
 npm install react-native-color-picker --save
 ```
+```
+yarn add react-native-color-picker
+```
+
 And use it in your application
 ```javascript
 import { ColorPicker } from 'react-native-color-picker'
@@ -28,6 +33,10 @@ const Picker = () => (
 Color picker will use space you provide. Therefore it is necessary to provide styles that will determine picker's size.
 
 ## API
+
+### Color support: 
+- HSV, RGB, HSVA, RGBA
+
 
 ### Color picker type
 
@@ -54,10 +63,32 @@ Both color pickers are [PureComponents](https://facebook.github.io/react/docs/re
 |`defaultColor`      |`String`    |Defines initial selected color in uncontrolled component.|
 |`oldColor`          |`String`    |Old color to be used for visual comparision. If it is not defined, whole circle is representing selected color.|
 |`style`             |`Style`     |Styles passed to color picker container|
+|`sliderStyles`             |`sliderStyles`     |Styles passed to [sliders](https://github.com/jeanregisser/react-native-slider)|
 |`onColorSelected`   |`Function`  |Callback with color (HEX string) as argument called when user confirms color selection.|
 |`onColorChange`     |`Function`  |Callback called each time when color is changed. Used in controlled component. Argument is color in HSV representation (see below)|
 |`onOldColorSelected`|`Function`  |Callback with color (HEX string) as argument called when user selects old color.|
-|`hideSliders`       |`Boolean`   |Option to hide bottom sliders (holo picker only) |
+|`sliderConfig`       |`Object`   | Options to enable specific sliders and add text labels and style overrides |
+
+
+
+#### sliderConfig Props:
+*HoloPicker Only*
+```
+{
+  hasSliders: true,
+  sliders: [
+    {
+      type: "saturation",
+      hasLabels: true,
+      labelText: "Saturation",
+      labelStyle: {},
+    },
+    { type: "value", hasLabels: true, labelText: "Value", labelStyle: {} },
+    { type: "opacity", hasLabels: true, labelText: "Opacity", labelStyle: {} },
+  ],
+}
+```
+- type must be *value, opacity, saturation*
 
 When using color picker as a controlled component you should always use HSV color representation to avoid conversion from/to HEX or RGB. HSV color representation is an object literal with properties:
 
@@ -90,8 +121,14 @@ fromHsv({ h: 200, s: 0.4, v:0.4 }) // #3d5866
 * [Uncontrolled triangle picker](examples/src/ExampleUncontrolledTriangle.js)
 * [Controlled triangle picker](examples/src/ExampleControlledTriangle.js)
 
+## Examples scripts
+- **dev-inst**: Adds all react-native-color-picker directly into the examples repo for rapid prototyping
+- **clean**: Removes all react-native-color-picker generated folders from `dev-inst`
+
 ## Limitations
 * Does not work well within `ScrollView` due to touch event interference.
+* Support for React-Native >= 59.0
+* Resolves RN issue with `<Sliders />` being pulled out of React Native package
 
 ## Thanks
 Our implementation was inspired by [Android Holo ColorPicker](https://github.com/LarsWerkman/HoloColorPicker)

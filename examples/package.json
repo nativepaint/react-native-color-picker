@@ -1,21 +1,34 @@
 {
-  "name": "ColorPickerExamples",
+  "name": "colorPickerExamples",
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint .",
+    "inst": "yarn add ../",
+    "dev-inst": "cp -R ../src ./module && cp -R ../resources ./resources",
+    "clean": "rm -rf ./module && rm -rf ./resources"
   },
   "dependencies": {
-    "react": "15.4.1",
-    "react-native": "^0.39.2",
-    "react-native-color-picker": ".."
+    "react": "16.8.3",
+    "react-native": "0.59.2",
+    "react-native-color-picker": "../"
   },
   "devDependencies": {
-    "babel-jest": "17.0.2",
-    "babel-preset-react-native": "1.9.0",
-    "jest": "17.0.3",
-    "react-test-renderer": "15.4.1"
+    "@babel/core": "^7.4.0",
+    "@babel/runtime": "^7.4.2",
+    "@react-native-community/eslint-config": "^0.0.3",
+    "babel-jest": "^24.5.0",
+    "eslint": "^5.15.3",
+    "eslint-plugin-react": "^7.12.4",
+    "jest": "^24.5.0",
+    "metro-react-native-babel-preset": "^0.53.1",
+    "prettier": "^1.16.4",
+    "prop-types": "^15.5.10",
+    "react-native-slider": "^0.11.0",
+    "react-test-renderer": "16.8.3",
+    "tinycolor2": "^1.4.1"
   },
   "jest": {
     "preset": "react-native"

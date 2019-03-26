@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import { ColorPicker, toHsv } from 'react-native-color-picker'
+import { ColorPicker, toHsv } from '../module/index' // Swap this to <react-native-color-picker> if you want to see it install normally
 
 export class ExampleControlledVertical extends React.Component {
 

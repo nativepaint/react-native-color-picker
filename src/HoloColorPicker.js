@@ -1,16 +1,44 @@
-import React from 'react'
-import PropTypes from 'prop-types';
-import { TouchableOpacity, Slider, View, Image, StyleSheet, InteractionManager, I18nManager } from 'react-native'
-import tinycolor from 'tinycolor2'
-import { createPanResponder } from './utils'
+import React from "react"
+import PropTypes from "prop-types"
+import Slider from "react-native-slider"
+import {
+  TouchableOpacity,
+  View,
+  Image,
+  StyleSheet,
+  InteractionManager,
+  I18nManager,
+  Text,
+} from "react-native"
+import tinycolor from "tinycolor2"
+import { createPanResponder } from "./utils"
+
+// Used to pass overrides to react-native-sliders
+const sliderStyles = {
+  thumbTintColor: "white",
+}
+// Used to dynamically render sliders
+const sliderConfig = {
+  hasSliders: true,
+  sliders: [
+    {
+      type: "saturation",
+      hasLabels: true,
+      labelText: "Saturation",
+      labelStyle: {},
+    },
+    { type: "value", hasLabels: true, labelText: "Value", labelStyle: {} },
+    { type: "opacity", hasLabels: true, labelText: "Opacity", labelStyle: {} },
+  ],
+}
 
 export class HoloColorPicker extends React.PureComponent {
-
   constructor(props, ctx) {
     super(props, ctx)
     const state = {
       color: { h: 0, s: 1, v: 1 },
       pickerSize: null,
+      opacity: 1,
     }
     if (props.oldColor) {
       state.color = tinycolor(props.oldColor).toHsv()
@@ -22,52 +50,71 @@ export class HoloColorPicker extends React.PureComponent {
     this._layout = { width: 0, height: 0, x: 0, y: 0 }
     this._pageX = 0
     this._pageY = 0
-    this._onLayout = this._onLayout.bind(this)
-    this._onSValueChange = this._onSValueChange.bind(this)
-    this._onVValueChange = this._onVValueChange.bind(this)
-    this._onColorSelected = this._onColorSelected.bind(this)
-    this._onOldColorSelected = this._onOldColorSelected.bind(this)
     this._isRTL = I18nManager.isRTL
   }
 
-  _getColor() {
-    const passedColor = typeof this.props.color === 'string'
-      ? tinycolor(this.props.color).toHsv()
-      : this.props.color
+  static defaultProps = {
+    sliderConfig: sliderConfig,
+    sliderStyles: sliderStyles,
+  };
+
+  _getColor = () => {
+    const passedColor =
+      typeof this.props.color === "string"
+        ? tinycolor(this.props.color).toHsv()
+        : this.props.color
     return passedColor || this.state.color
-  }
+  };
 
-  _onColorSelected() {
+  _getRGBA = () => {
+    const { color, opacity } = this.state
+    return tinycolor(color)
+      .setAlpha(opacity)
+      .toRgbString()
+  };
+
+  _onColorSelected = () => {
     const { onColorSelected } = this.props
-    const color = tinycolor(this._getColor()).toHexString()
+    const color = tinycolor(this._getColor())
+      .setAlpha(this.state.opacity)
+      .toHex8String()
     onColorSelected && onColorSelected(color)
-  }
+  };
 
-  _onOldColorSelected() {
+  _onOldColorSelected = () => {
     const { oldColor, onOldColorSelected } = this.props
     const color = tinycolor(oldColor)
     this.setState({ color: color.toHsv() })
     onOldColorSelected && onOldColorSelected(color.toHexString())
-  }
+  };
 
-  _onSValueChange(s) {
-    const { h, v } = this._getColor()
-    this._onColorChange({ h, s, v })
-  }
-
-  _onVValueChange(v) {
-    const { h, s } = this._getColor()
-    this._onColorChange({ h, s, v })
-  }
-
-  _onColorChange(color) {
-    this.setState({ color })
-    if (this.props.onColorChange) {
-      this.props.onColorChange(color)
+  _onValueChange = ({ saturation, value, opacity }) => {
+    const { h, s, v } = this._getColor()
+    if (saturation) {
+      const color = { h, s: saturation, v }
+      return this._onColorChange({ color })
     }
-  }
+    if (value) {
+      const color = { h, s, v: value }
+      return this._onColorChange({ color })
+    }
+    if (opacity) {
+      const color = { h, s, v }
+      return this._onColorChange({ color, opacity })
+    }
+  };
 
-  _onLayout(l) {
+  _onColorChange = ({ color, opacity }) => {
+    this.setState(state => ({
+      color: color || state.color,
+      opacity: opacity || state.opacity,
+    }))
+    if (this.props.onColorChange) {
+      this.props.onColorChange(color, opacity)
+    }
+  };
+
+  _onLayout = l => {
     this._layout = l.nativeEvent.layout
     const { width, height } = this._layout
     const pickerSize = Math.min(width, height)
@@ -78,31 +125,30 @@ export class HoloColorPicker extends React.PureComponent {
     // we always measure because layout is the same even though picker is moved on the page
     InteractionManager.runAfterInteractions(() => {
       // measure only after (possible) animation ended
-      this.refs.pickerContainer && this.refs.pickerContainer.measure((x, y, width, height, pageX, pageY) => {
-        // picker position in the screen
-        this._pageX = pageX
-        this._pageY = pageY
-      })
+      this.refs.pickerContainer &&
+        this.refs.pickerContainer.measure(
+          (x, y, width, height, pageX, pageY) => {
+            // picker position in the screen
+            this._pageX = pageX
+            this._pageY = pageY
+          }
+        )
     })
-  }
+  };
 
-  _computeHValue(x, y) {
+  _computeHValue = (x, y) => {
     const mx = this.state.pickerSize / 2
     const my = this.state.pickerSize / 2
     const dx = x - mx
     const dy = y - my
     const rad = Math.atan2(dx, dy) + Math.PI + Math.PI / 2
-    return rad * 180 / Math.PI % 360
-  }
+    return ((rad * 180) / Math.PI) % 360
+  };
 
-  _hValueToRad(deg) {
-    const rad = deg * Math.PI / 180
+  _hValueToRad = deg => {
+    const rad = (deg * Math.PI) / 180
     return rad - Math.PI - Math.PI / 2
-  }
-
-  getColor() {
-    return tinycolor(this._getColor()).toHexString()
-  }
+  };
 
   componentWillMount() {
     const handleColorChange = ({ x, y }) => {
@@ -112,7 +158,7 @@ export class HoloColorPicker extends React.PureComponent {
       const relativeX = x - this._pageX - marginLeft
       const relativeY = y - this._pageY - marginTop
       const h = this._computeHValue(relativeX, relativeY)
-      this._onColorChange({ h, s, v })
+      this._onColorChange({ color: { h, s, v } })
     }
     this._pickerResponder = createPanResponder({
       onStart: handleColorChange,
@@ -120,13 +166,42 @@ export class HoloColorPicker extends React.PureComponent {
     })
   }
 
+  generateSliders = () => {
+    const { sliderStyles, sliderConfig } = this.props
+    const { opacity } = this.state
+    const color = this._getColor()
+    const { s: saturation, v: value } = color
+    const options = {
+      opacity,
+      saturation,
+      value,
+    }
+    return sliderConfig.sliders.map((slider, index) => {
+      const { type, labelText, hasLabels, labelStyle } = slider
+      if (type !== ('saturation' || 'value' || 'opacity')){
+        return null
+      }
+      return (
+        <React.Fragment key={`${type}${index}`}>
+          { hasLabels && <Text style={[styles.sliderLabelText, labelStyle || {}]}>{labelText}</Text>}
+          <Slider
+            {...sliderStyles}
+            minimumTrackTintColor={this._getRGBA()}
+            value={options[type]}
+            onValueChange={val => this._onValueChange({ [type]: val })}
+          />
+        </React.Fragment>
+      )
+    })
+  };
+
   render() {
-    const { pickerSize } = this.state
-    const { oldColor, style } = this.props
+    const { pickerSize, opacity } = this.state
+    const { hideSliders, oldColor, style, sliderConfig } = this.props
     const color = this._getColor()
     const { h, s, v } = color
     const angle = this._hValueToRad(h)
-    const selectedColor = tinycolor(color).toHexString()
+    const selectedColor = tinycolor({ ...color, a: opacity }).toHex8String()
     const indicatorColor = tinycolor({ h, s: 1, v: 1 }).toHexString()
     const computed = makeComputedStyles({
       pickerSize,
@@ -138,61 +213,70 @@ export class HoloColorPicker extends React.PureComponent {
     })
     return (
       <View style={style}>
-        <View onLayout={this._onLayout} ref='pickerContainer' style={styles.pickerContainer}>
-          {!pickerSize ? null :
-          <View>
-            <View
-              {...this._pickerResponder.panHandlers}
-              style={[styles.picker, computed.picker]}
-              collapsable={false}
-            >
-              <Image
-                source={require('../resources/color-circle.png')}
-                resizeMode='contain'
-                style={[styles.pickerImage]}
-              />
-              <View style={[styles.pickerIndicator, computed.pickerIndicator]} />
+        <View
+          onLayout={this._onLayout}
+          ref="pickerContainer"
+          style={styles.pickerContainer}
+        >
+          {!pickerSize ? null : (
+            <View>
+              <View
+                {...this._pickerResponder.panHandlers}
+                style={[styles.picker, computed.picker]}
+                collapsable={false}
+              >
+                <Image
+                  source={require("../resources/color-circle.png")}
+                  resizeMode="contain"
+                  style={[styles.pickerImage]}
+                />
+                <View
+                  style={[styles.pickerIndicator, computed.pickerIndicator]}
+                />
+              </View>
+              {oldColor && (
+                <TouchableOpacity
+                  style={[styles.selectedPreview, computed.selectedPreview]}
+                  onPress={this._onColorSelected}
+                  activeOpacity={0.7}
+                />
+              )}
+              {oldColor && (
+                <TouchableOpacity
+                  style={[styles.originalPreview, computed.originalPreview]}
+                  onPress={this._onOldColorSelected}
+                  activeOpacity={0.7}
+                />
+              )}
+              {!oldColor && (
+                <TouchableOpacity
+                  style={[
+                    styles.selectedFullPreview,
+                    computed.selectedFullPreview,
+                  ]}
+                  onPress={this._onColorSelected}
+                  activeOpacity={0.7}
+                />
+              )}
             </View>
-            {oldColor &&
-            <TouchableOpacity
-              style={[styles.selectedPreview, computed.selectedPreview]}
-              onPress={this._onColorSelected}
-              activeOpacity={0.7}
-            />
-            }
-            {oldColor &&
-            <TouchableOpacity
-              style={[styles.originalPreview, computed.originalPreview]}
-              onPress={this._onOldColorSelected}
-              activeOpacity={0.7}
-            />
-            }
-            {!oldColor &&
-            <TouchableOpacity
-              style={[styles.selectedFullPreview, computed.selectedFullPreview]}
-              onPress={this._onColorSelected}
-              activeOpacity={0.7}
-            />
-            }
-          </View>
-          }
+          )}
         </View>
-        { this.props.hideSliders == true ? null :
-          <View>
-            <Slider value={s} onValueChange={this._onSValueChange} />
-            <Slider value={v} onValueChange={this._onVValueChange} />
-          </View>
-        }
+        {!hideSliders && (
+          <View style={styles.sliderContainer}>{this.generateSliders()}</View>
+        )}
       </View>
     )
   }
-
 }
 
 HoloColorPicker.propTypes = {
   color: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.shape({ h: PropTypes.number, s: PropTypes.number, v: PropTypes.number }),
+    PropTypes.shape({
+      h: PropTypes.number,
+      s: PropTypes.number,
+      v: PropTypes.number,
+    }),
   ]),
   defaultColor: PropTypes.string,
   oldColor: PropTypes.string,
@@ -200,6 +284,8 @@ HoloColorPicker.propTypes = {
   onColorSelected: PropTypes.func,
   onOldColorSelected: PropTypes.func,
   hideSliders: PropTypes.bool,
+  sliderConfig: PropTypes.object,
+  sliderOptions: PropTypes.object,
 }
 
 const makeComputedStyles = ({
@@ -227,7 +313,7 @@ const makeComputedStyles = ({
     },
     pickerIndicator: {
       top: mx + dx - indicatorSize / 2,
-      [isRTL ? 'right' : 'left']: my + dy - indicatorSize / 2,
+      [isRTL ? "right" : "left"]: my + dy - indicatorSize / 2,
       width: indicatorSize,
       height: indicatorSize,
       borderRadius: indicatorSize / 2,
@@ -263,10 +349,14 @@ const makeComputedStyles = ({
 }
 
 const styles = StyleSheet.create({
+  sliderContainer: { flex: 1 },
+  sliderLabelText: {
+    color: "white",
+  },
   pickerContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   pickerImage: {
     flex: 1,
@@ -274,9 +364,9 @@ const styles = StyleSheet.create({
     height: null,
   },
   pickerIndicator: {
-    position: 'absolute',
+    position: "absolute",
     // Shadow only works on iOS.
-    shadowColor: 'black',
+    shadowColor: "black",
     shadowOpacity: 0.3,
     shadowOffset: { width: 3, height: 3 },
     shadowRadius: 4,
@@ -285,17 +375,17 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   selectedPreview: {
-    position: 'absolute',
+    position: "absolute",
     borderLeftWidth: 0,
   },
   originalPreview: {
-    position: 'absolute',
+    position: "absolute",
     borderRightWidth: 0,
   },
   selectedFullPreview: {
-    position: 'absolute',
+    position: "absolute",
   },
   pickerAlignment: {
-    alignItems: 'center',
+    alignItems: "center",
   },
 })

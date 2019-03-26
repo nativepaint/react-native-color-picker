@@ -185,8 +185,8 @@ export class HoloColorPicker extends React.PureComponent {
         <React.Fragment key={`${type}${index}`}>
           { hasLabels && <Text style={[styles.sliderLabelText, labelStyle || {}]}>{labelText}</Text>}
           <Slider
-            {...sliderStyles}
             minimumTrackTintColor={this._getRGBA()}
+            {...sliderStyles}
             value={options[type]}
             onValueChange={val => this._onValueChange({ [type]: val })}
           />

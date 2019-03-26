@@ -92,6 +92,7 @@ fromHsv({ h: 200, s: 0.4, v:0.4 }) // #3d5866
 
 ## Limitations
 * Does not work well within `ScrollView` due to touch event interference.
+* Support for React-Native >= 59.0
 
 ## Thanks
 Our implementation was inspired by [Android Holo ColorPicker](https://github.com/LarsWerkman/HoloColorPicker)

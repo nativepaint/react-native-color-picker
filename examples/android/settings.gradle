@@ -1,3 +1,3 @@
-rootProject.name = 'ColorPickerExamples'
+rootProject.name = 'colorPickerExamples'
 
 include ':app'

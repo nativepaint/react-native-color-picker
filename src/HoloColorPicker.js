@@ -19,7 +19,7 @@ const sliderStyles = {
 }
 // Used to dynamically render sliders
 const sliderConfig = {
-  hasSliders: true,
+  hasSliders: false,
   sliders: [
     {
       type: "saturation",
@@ -178,7 +178,7 @@ export class HoloColorPicker extends React.PureComponent {
     }
     return sliderConfig.sliders.map((slider, index) => {
       const { type, labelText, hasLabels, labelStyle } = slider
-      if (type !== ('saturation' || 'value' || 'opacity')){
+      if (type !== ('saturation' && 'value' && 'opacity')){
         return null
       }
       return (
@@ -197,7 +197,7 @@ export class HoloColorPicker extends React.PureComponent {
 
   render() {
     const { pickerSize, opacity } = this.state
-    const { hideSliders, oldColor, style, sliderConfig } = this.props
+    const { oldColor, style, sliderConfig: { hideSliders } } = this.props
     const color = this._getColor()
     const { h, s, v } = color
     const angle = this._hValueToRad(h)

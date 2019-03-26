@@ -23,12 +23,12 @@ const sliderConfig = {
   sliders: [
     {
       type: "saturation",
-      enabled: true,
       hasLabels: true,
       labelText: "Saturation",
+      labelStyle: {}
     },
-    { type: "value", enabled: true, hasLabels: true, labelText: "Value" },
-    { type: "opacity", enabled: true, hasLabels: true, labelText: "Opacity" },
+    { type: "value", hasLabels: true, labelText: "Value", labelStyle: {} },
+    { type: "opacity", hasLabels: true, labelText: "Opacity", labelStyle: {} },
   ],
 }
 
@@ -168,7 +168,7 @@ export class HoloColorPicker extends React.PureComponent {
 
   generateSliders = () => {
     const { sliderStyles, sliderConfig } = this.props
-    const { type } = sliderConfig
+    const { labelStyle } = sliderConfig
     const { opacity } = this.state
     const color = this._getColor()
     const { s: saturation, v: value } = color
@@ -177,15 +177,18 @@ export class HoloColorPicker extends React.PureComponent {
       saturation,
       value,
     }
-    return sliderConfig.sliders.map(slider => {
+    return sliderConfig.sliders.map((slider, index) => {
+      const { type } = slider
       return (
-        <Slider
-          {...sliderStyles}
-          key={slider.type}
-          minimumTrackTintColor={this._getRGBA()}
-          value={options[slider.type]}
-          onValueChange={val => this._onValueChange({ [slider.type]: val })}
-        />
+        <React.Fragment key={`${type}${index}`}>
+          { slider.hasLabels && <Text style={[styles.sliderLabelText, labelStyle || {}]}></Text>}
+          <Slider
+            {...sliderStyles}
+            minimumTrackTintColor={this._getRGBA()}
+            value={options[type]}
+            onValueChange={val => this._onValueChange({ [type]: val })}
+          />
+        </React.Fragment>
       )
     })
   };

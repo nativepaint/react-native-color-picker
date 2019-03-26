@@ -71,7 +71,8 @@ Both color pickers are [PureComponents](https://facebook.github.io/react/docs/re
 
 
 
-### sliderConfig Props:
+#### sliderConfig Props:
+*HoloPicker Only*
 ```
 {
   hasSliders: true,

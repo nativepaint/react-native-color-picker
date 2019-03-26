@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import { TriangleColorPicker, toHsv } from 'react-native-color-picker'
+import { TriangleColorPicker, toHsv } from '../module/index'
 
 export class ExampleControlledTriangle extends React.Component {
 

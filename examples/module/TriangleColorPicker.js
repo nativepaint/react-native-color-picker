@@ -1,16 +1,22 @@
 import React from 'react'
-import PropTypes from 'prop-types';
+import PropTypes from 'prop-types'
+import Slider from 'react-native-slider'
 import { TouchableOpacity, View, Image, StyleSheet, InteractionManager, I18nManager } from 'react-native'
 import tinycolor from 'tinycolor2'
 import { createPanResponder, rotatePoint } from './utils'
 
-export class TriangleColorPicker extends React.PureComponent {
+const sliderConfig = {
+  thumbTintColor: 'white',
+  maximumTrackTintColor: 'transparent',
+}
 
+export class TriangleColorPicker extends React.PureComponent {
   constructor(props, ctx) {
     super(props, ctx)
     const state = {
       color: { h: 0, s: 1, v: 1 },
       pickerSize: null,
+      opacity: 1,
     }
     if (props.oldColor) {
       state.color = tinycolor(props.oldColor).toHsv()
@@ -30,11 +36,20 @@ export class TriangleColorPicker extends React.PureComponent {
     this._isRTL = I18nManager.isRTL
   }
 
+  static defaultProps = {
+    sliderConfig: sliderConfig,
+  }
+
   _getColor() {
     const passedColor = typeof this.props.color === 'string'
       ? tinycolor(this.props.color).toHsv()
       : this.props.color
     return passedColor || this.state.color
+  }
+
+  _getRGBA = () => {
+    const { color, opacity } = this.state
+    return tinycolor(color).setAlpha(opacity).toRgbString()
   }
 
   _onColorSelected() {
@@ -60,10 +75,16 @@ export class TriangleColorPicker extends React.PureComponent {
     this._onColorChange({ h, s, v })
   }
 
-  _onColorChange(color) {
-    this.setState({ color })
+  _onOpacityChange = (opacity) => {
+    const color = this._getColor()
+    this.setState({ opacity })
+    this._onColorChange(color, opacity)
+  }
+
+  _onColorChange(color, opacity) {
+    this.setState(state => ({ color, opacity: opacity || state.opacity }))
     if (this.props.onColorChange) {
-      this.props.onColorChange(color)
+      this.props.onColorChange(color, opacity)
     }
   }
 
@@ -205,10 +226,10 @@ export class TriangleColorPicker extends React.PureComponent {
   }
 
   render() {
-    const { pickerSize } = this.state
-    const { oldColor, style } = this.props
+    const { pickerSize, opacity } = this.state
+    const { oldColor, style, sliderConfig } = this.props
     const color = this._getColor()
-    const { h } = color
+    const { h, s, v } = color
     const angle = this._hValueToRad(h)
     const selectedColor = tinycolor(color).toHexString()
     const indicatorColor = tinycolor({ h, s: 1, v: 1 }).toHexString()
@@ -253,6 +274,7 @@ export class TriangleColorPicker extends React.PureComponent {
           </View>
           }
         </View>
+          <Slider {...sliderConfig} minimumTrackTintColor={this._getRGBA()} value={opacity} onValueChange={this._onOpacityChange} />
         <View style={[styles.colorPreviews, computed.colorPreviews]}>
           {oldColor &&
           <TouchableOpacity
@@ -283,6 +305,7 @@ TriangleColorPicker.propTypes = {
   onColorChange: PropTypes.func,
   onColorSelected: PropTypes.func,
   onOldColorSelected: PropTypes.func,
+  sliderConfig: PropTypes.object,
 }
 
 function getPickerProperties(pickerSize) {

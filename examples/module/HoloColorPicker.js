@@ -1,12 +1,17 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { TouchableOpacity, Slider, View, Image, StyleSheet, InteractionManager, I18nManager } from 'react-native'
-import { }
+import Slider from 'react-native-slider'
+import { TouchableOpacity, View, Image, StyleSheet, InteractionManager, I18nManager } from 'react-native'
 import tinycolor from 'tinycolor2'
 import { createPanResponder } from './utils'
 
-export class HoloColorPicker extends React.PureComponent {
+const sliderConfig = {
+  thumbTintColor: 'white',
+  // minimumTrackTintColor: 'blue',
+  // maximumTrackTintColor: 'white',
+}
 
+export class HoloColorPicker extends React.PureComponent {
   constructor(props, ctx) {
     super(props, ctx)
     const state = {
@@ -24,12 +29,11 @@ export class HoloColorPicker extends React.PureComponent {
     this._layout = { width: 0, height: 0, x: 0, y: 0 }
     this._pageX = 0
     this._pageY = 0
-    this._onLayout = this._onLayout.bind(this)
-    this._onSValueChange = this._onSValueChange.bind(this)
-    this._onVValueChange = this._onVValueChange.bind(this)
-    this._onColorSelected = this._onColorSelected.bind(this)
-    this._onOldColorSelected = this._onOldColorSelected.bind(this)
     this._isRTL = I18nManager.isRTL
+  }
+
+  static defaultProps = {
+    sliderConfig: sliderConfig,
   }
 
   _getColor = () => {
@@ -39,25 +43,30 @@ export class HoloColorPicker extends React.PureComponent {
     return passedColor || this.state.color
   }
 
-  _onColorSelected() {
+  _getRGBA = () => {
+    const { color, opacity } = this.state
+    return tinycolor(color).setAlpha(opacity).toRgbString()
+  }
+
+  _onColorSelected = () => {
     const { onColorSelected } = this.props
     const color = tinycolor(this._getColor()).toHexString()
     onColorSelected && onColorSelected(color)
   }
 
-  _onOldColorSelected() {
+  _onOldColorSelected = () => {
     const { oldColor, onOldColorSelected } = this.props
     const color = tinycolor(oldColor)
     this.setState({ color: color.toHsv() })
     onOldColorSelected && onOldColorSelected(color.toHexString())
   }
 
-  _onSValueChange(s) {
+  _onSValueChange = (s) => {
     const { h, v } = this._getColor()
     this._onColorChange({ h, s, v })
   }
 
-  _onVValueChange(v) {
+  _onVValueChange = (v) => {
     const { h, s } = this._getColor()
     this._onColorChange({ h, s, v })
   }
@@ -68,14 +77,14 @@ export class HoloColorPicker extends React.PureComponent {
     this._onColorChange(color, opacity)
   }
 
-  _onColorChange(color, opacity) {
+  _onColorChange = (color, opacity) => {
     this.setState(state => ({ color, opacity: opacity || state.opacity }))
     if (this.props.onColorChange) {
       this.props.onColorChange(color, opacity)
     }
   }
 
-  _onLayout(l) {
+  _onLayout = (l) => {
     this._layout = l.nativeEvent.layout
     const { width, height } = this._layout
     const pickerSize = Math.min(width, height)
@@ -94,7 +103,7 @@ export class HoloColorPicker extends React.PureComponent {
     })
   }
 
-  _computeHValue(x, y) {
+  _computeHValue = (x, y) => {
     const mx = this.state.pickerSize / 2
     const my = this.state.pickerSize / 2
     const dx = x - mx
@@ -103,7 +112,7 @@ export class HoloColorPicker extends React.PureComponent {
     return rad * 180 / Math.PI % 360
   }
 
-  _hValueToRad(deg) {
+  _hValueToRad = (deg) => {
     const rad = deg * Math.PI / 180
     return rad - Math.PI - Math.PI / 2
   }
@@ -126,7 +135,7 @@ export class HoloColorPicker extends React.PureComponent {
 
   render() {
     const { pickerSize, opacity } = this.state
-    const { hideSliders, oldColor, style } = this.props
+    const { hideSliders, oldColor, style, sliderConfig } = this.props
     const color = this._getColor()
     const { h, s, v } = color
     const angle = this._hValueToRad(h)
@@ -183,9 +192,9 @@ export class HoloColorPicker extends React.PureComponent {
         </View>
         { !hideSliders && (
           <View>
-            <Slider value={s} onValueChange={this._onSValueChange} />
-            <Slider value={v} onValueChange={this._onVValueChange} />
-            <Slider value={opacity} onValueChange={this._onOpacityChange} />
+            <Slider {...sliderConfig} minimumTrackTintColor={this._getRGBA()} value={s} onValueChange={this._onSValueChange} />
+            <Slider {...sliderConfig} minimumTrackTintColor={this._getRGBA()} value={v} onValueChange={this._onVValueChange} />
+            <Slider {...sliderConfig} minimumTrackTintColor={this._getRGBA()} value={opacity} onValueChange={this._onOpacityChange} />
           </View>
         )}
       </View>)
@@ -204,6 +213,7 @@ HoloColorPicker.propTypes = {
   onColorSelected: PropTypes.func,
   onOldColorSelected: PropTypes.func,
   hideSliders: PropTypes.bool,
+  sliderConfig: PropTypes.object,
 }
 
 const makeComputedStyles = ({

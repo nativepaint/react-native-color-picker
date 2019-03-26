@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import { TriangleColorPicker } from 'react-native-color-picker'
+import { TriangleColorPicker } from '../module/index'
 
 export const ExampleUncontrolledTriangle = () => (
   <View style={{flex: 1, padding: 15, backgroundColor: '#212021'}}>

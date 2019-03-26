@@ -12,7 +12,7 @@ const examples = [
   { Component: ExampleControlledTriangle, title: 'Controlled triangle picker' },
 ]
 
-export class App extends React.Component {
+export default class App extends React.Component {
 
   constructor(...args) {
     super(...args)

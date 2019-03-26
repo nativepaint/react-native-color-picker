@@ -1,7 +1,7 @@
 # react-native-color-picker
 *Fork of [instea/react-native-color-picker](https://github.com/instea/react-native-color-picker)*
 
-React Native implementation of color picker for both Android and iOS.
+React Native implementation of color picker for both Android and iOS. 
 
 ![android preview](doc/preview_android.png)
 ![iphone preview](doc/preview_iphone.png)
@@ -15,6 +15,10 @@ Install the color picker
 ```
 npm install react-native-color-picker --save
 ```
+```
+yarn add react-native-color-picker
+```
+
 And use it in your application
 ```javascript
 import { ColorPicker } from 'react-native-color-picker'
@@ -29,6 +33,10 @@ const Picker = () => (
 Color picker will use space you provide. Therefore it is necessary to provide styles that will determine picker's size.
 
 ## API
+
+### Color support: 
+- HSV, RGB, HSVA, RGBA
+
 
 ### Color picker type
 

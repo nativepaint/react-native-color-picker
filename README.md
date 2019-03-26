@@ -63,12 +63,31 @@ Both color pickers are [PureComponents](https://facebook.github.io/react/docs/re
 |`defaultColor`      |`String`    |Defines initial selected color in uncontrolled component.|
 |`oldColor`          |`String`    |Old color to be used for visual comparision. If it is not defined, whole circle is representing selected color.|
 |`style`             |`Style`     |Styles passed to color picker container|
-|`sliderConfig`             |`slider controller`     |Styles passed to [sliders](https://github.com/jeanregisser/react-native-slider)|
+|`sliderStyles`             |`sliderStyles`     |Styles passed to [sliders](https://github.com/jeanregisser/react-native-slider)|
 |`onColorSelected`   |`Function`  |Callback with color (HEX string) as argument called when user confirms color selection.|
 |`onColorChange`     |`Function`  |Callback called each time when color is changed. Used in controlled component. Argument is color in HSV representation (see below)|
 |`onOldColorSelected`|`Function`  |Callback with color (HEX string) as argument called when user selects old color.|
-|`hideSliders`       |`Boolean`   |Option to hide bottom sliders (holo picker only) |
+|`sliderConfig`       |`Object`   | Options to enable specific sliders and add text labels and style overrides |
 
+
+
+### sliderConfig Props:
+```
+{
+  hasSliders: true,
+  sliders: [
+    {
+      type: "saturation",
+      hasLabels: true,
+      labelText: "Saturation",
+      labelStyle: {},
+    },
+    { type: "value", hasLabels: true, labelText: "Value", labelStyle: {} },
+    { type: "opacity", hasLabels: true, labelText: "Opacity", labelStyle: {} },
+  ],
+}
+```
+- type must be *value, opacity, saturation*
 
 When using color picker as a controlled component you should always use HSV color representation to avoid conversion from/to HEX or RGB. HSV color representation is an object literal with properties:
 

@@ -177,7 +177,10 @@ export class HoloColorPicker extends React.PureComponent {
       value,
     }
     return sliderConfig.sliders.map((slider, index) => {
-      const { type, labelText, hasLabels, labelStyle } = slider;
+      const { type, labelText, hasLabels, labelStyle } = slider
+      if (type !== ('saturation' || 'value' || 'opacity')){
+        return null
+      }
       return (
         <React.Fragment key={`${type}${index}`}>
           { hasLabels && <Text style={[styles.sliderLabelText, labelStyle || {}]}>{labelText}</Text>}

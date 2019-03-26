@@ -1,4 +1,5 @@
 # react-native-color-picker
+*Fork of [instea/react-native-color-picker](https://github.com/instea/react-native-color-picker)*
 
 React Native implementation of color picker for both Android and iOS.
 
@@ -92,9 +93,14 @@ fromHsv({ h: 200, s: 0.4, v:0.4 }) // #3d5866
 * [Uncontrolled triangle picker](examples/src/ExampleUncontrolledTriangle.js)
 * [Controlled triangle picker](examples/src/ExampleControlledTriangle.js)
 
+## Examples scripts
+- **dev-inst**: Adds all react-native-color-picker directly into the examples repo for rapid prototyping
+- **clean**: Removes all react-native-color-picker generated folders from `dev-inst`
+
 ## Limitations
 * Does not work well within `ScrollView` due to touch event interference.
 * Support for React-Native >= 59.0
+* Resolves RN issue with `<Sliders />` being pulled out of React Native package
 
 ## Thanks
 Our implementation was inspired by [Android Holo ColorPicker](https://github.com/LarsWerkman/HoloColorPicker)

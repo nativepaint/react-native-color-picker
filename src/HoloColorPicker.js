@@ -191,7 +191,7 @@ export class HoloColorPicker extends React.PureComponent {
           }
         </View>
         { !hideSliders && (
-          <View>
+          <View style={styles.sliderContainer}>
             <Slider {...sliderConfig} minimumTrackTintColor={this._getRGBA()} value={s} onValueChange={this._onSValueChange} />
             <Slider {...sliderConfig} minimumTrackTintColor={this._getRGBA()} value={v} onValueChange={this._onVValueChange} />
             <Slider {...sliderConfig} minimumTrackTintColor={this._getRGBA()} value={opacity} onValueChange={this._onOpacityChange} />
@@ -277,6 +277,7 @@ const makeComputedStyles = ({
 }
 
 const styles = StyleSheet.create({
+  sliderContainer: {flex: 1},
   pickerContainer: {
     flex: 1,
     alignItems: 'center',

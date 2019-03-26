@@ -7,7 +7,8 @@
     "test": "jest",
     "lint": "eslint .",
     "inst": "yarn add ../",
-    "dev-inst": "cp -R ../src ./module && cp -R ../resources ./resources"
+    "dev-inst": "cp -R ../src ./module && cp -R ../resources ./resources",
+    "clean": "rm -rf ./module && rm -rf ./resources"
   },
   "dependencies": {
     "react": "16.8.3",

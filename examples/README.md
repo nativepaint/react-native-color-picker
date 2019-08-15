@@ -10,4 +10,4 @@
 `dev-inst`: this script will install the repo as a module so that react-native can target the module and hot reload
 `inst`: This script will re-install the repo
 
-To use the installed repo you will have to swap out the module/index for `@paintrace/react-native-color-picker`
+To use the installed repo you will have to swap out the module/index for `@nativepaint/react-native-color-picker`

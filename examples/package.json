@@ -12,7 +12,7 @@
     "postinstall": "yarn dev-inst"
   },
   "dependencies": {
-    "@paintrace/react-native-color-picker": "../",
+    "@nativepaint/react-native-color-picker": "../",
     "react": "16.8.3",
     "react-native": "0.59.2"
   },

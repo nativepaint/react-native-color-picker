@@ -8,12 +8,13 @@
     "lint": "eslint .",
     "inst": "yarn add ../",
     "dev-inst": "cp -R ../src ./module && cp -R ../resources ./resources",
-    "clean": "rm -rf ./module && rm -rf ./resources"
+    "clean": "rm -rf ./module && rm -rf ./resources",
+    "postinstall": "yarn dev-inst"
   },
   "dependencies": {
+    "@paintrace/react-native-color-picker": "../",
     "react": "16.8.3",
-    "react-native": "0.59.2",
-    "react-native-color-picker": "../"
+    "react-native": "0.59.2"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0",

@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import Slider from 'react-native-slider';
+import React from 'react'
+import PropTypes from 'prop-types'
+import Slider from 'react-native-slider'
 import {
   TouchableOpacity,
   View,
@@ -9,15 +9,15 @@ import {
   InteractionManager,
   I18nManager,
   Text,
-} from 'react-native';
-import tinycolor from 'tinycolor2';
-import { createPanResponder } from './utils';
+} from 'react-native'
+import tinycolor from 'tinycolor2'
+import { createPanResponder } from './utils'
 
 // Used to pass overrides to react-native-sliders
 const sliderStylesProps = {
   thumbTintColor: 'white',
   style: {},
-};
+}
 // Used to dynamically render sliders
 const sliderConfigProps = {
   hasSliders: true,
@@ -31,36 +31,36 @@ const sliderConfigProps = {
     { type: 'value', hasLabels: true, labelText: 'Value', labelStyle: {} },
     { type: 'opacity', hasLabels: true, labelText: 'Opacity', labelStyle: {} },
   ],
-};
+}
 
 export class HoloColorPicker extends React.PureComponent {
   constructor(props, ctx) {
-    super(props, ctx);
+    super(props, ctx)
     const state = {
       color: { h: 0, s: 1, v: 1 },
       pickerSize: null,
       opacity: 1,
-    };
+    }
     if (props.oldColor) {
-      const opacity = this._getOpacity(props.oldColor);
+      const opacity = this._getOpacity(props.oldColor)
       if (opacity) {
-        state.opacity = parseFloat(opacity);
+        state.opacity = parseFloat(opacity)
       }
-      state.color = tinycolor(props.oldColor).toHsv();
+      state.color = tinycolor(props.oldColor).toHsv()
     }
     if (props.defaultColor) {
-      const opacity = this._getOpacity(props.oldColor);
+      const opacity = this._getOpacity(props.oldColor)
       if (opacity) {
-        state.opacity = parseFloat(opacity);
+        state.opacity = parseFloat(opacity)
       }
-      state.color = tinycolor(props.defaultColor).toHsv();
+      state.color = tinycolor(props.defaultColor).toHsv()
     }
-    this.state = state;
-    this._layout = { width: 0, height: 0, x: 0, y: 0 };
-    this._pageX = 0;
-    this._pageY = 0;
-    this._isRTL = I18nManager.isRTL;
-    this.pickerContainer = React.createRef();
+    this.state = state
+    this._layout = { width: 0, height: 0, x: 0, y: 0 }
+    this._pageX = 0
+    this._pageY = 0
+    this._isRTL = I18nManager.isRTL
+    this.pickerContainer = React.createRef()
   }
 
   _getOpacity = color =>
@@ -74,51 +74,51 @@ export class HoloColorPicker extends React.PureComponent {
   };
 
   _getColor = () => {
-    const { color, opacity } = this.props;
+    const { color, opacity } = this.props
     const passedColor =
       typeof color === 'string'
         ? tinycolor(color)
             .setAlpha(opacity)
             .toHsv()
-        : color;
-    return passedColor || this.state.color;
+        : color
+    return passedColor || this.state.color
   };
 
   _getRGBA = () => {
-    const { color, opacity } = this.state;
+    const { color, opacity } = this.state
     return tinycolor(color)
       .setAlpha(opacity)
-      .toRgbString();
+      .toRgbString()
   };
 
   _onColorSelected = () => {
-    const { onColorSelected } = this.props;
+    const { onColorSelected } = this.props
     const color = tinycolor(this._getColor())
       .setAlpha(this.state.opacity)
-      .toHex8String();
-    onColorSelected && onColorSelected(color);
+      .toHex8String()
+    onColorSelected && onColorSelected(color)
   };
 
   _onOldColorSelected = () => {
-    const { oldColor, onOldColorSelected } = this.props;
-    const color = tinycolor(oldColor);
-    this.setState({ color: color.toHsv() });
-    onOldColorSelected && onOldColorSelected(color.toHexString());
+    const { oldColor, onOldColorSelected } = this.props
+    const color = tinycolor(oldColor)
+    this.setState({ color: color.toHsv() })
+    onOldColorSelected && onOldColorSelected(color.toHexString())
   };
 
   _onValueChange = ({ saturation, value, opacity }) => {
-    const { h, s, v } = this._getColor();
+    const { h, s, v } = this._getColor()
     if (saturation) {
-      const color = { h, s: saturation, v };
-      return this._onColorChange({ color });
+      const color = { h, s: saturation, v }
+      return this._onColorChange({ color })
     }
     if (value) {
-      const color = { h, s, v: value };
-      return this._onColorChange({ color });
+      const color = { h, s, v: value }
+      return this._onColorChange({ color })
     }
     if (opacity) {
-      const color = { h, s, v };
-      return this._onColorChange({ color, opacity });
+      const color = { h, s, v }
+      return this._onColorChange({ color, opacity })
     }
   };
 
@@ -126,18 +126,18 @@ export class HoloColorPicker extends React.PureComponent {
     this.setState(state => ({
       color: color || state.color,
       opacity: opacity || state.opacity,
-    }));
+    }))
     if (this.props.onColorChange) {
-      this.props.onColorChange(color, opacity);
+      this.props.onColorChange(color, opacity)
     }
   };
 
   _onLayout = l => {
-    this._layout = l.nativeEvent.layout;
-    const { width, height } = this._layout;
-    const pickerSize = Math.min(width, height);
+    this._layout = l.nativeEvent.layout
+    const { width, height } = this._layout
+    const pickerSize = Math.min(width, height)
     if (this.state.pickerSize !== pickerSize) {
-      this.setState({ pickerSize });
+      this.setState({ pickerSize })
     }
     // layout.x, layout.y is always 0
     // we always measure because layout is the same even though picker is moved on the page
@@ -147,58 +147,58 @@ export class HoloColorPicker extends React.PureComponent {
         this.pickerContainer.current.measure(
           (x, y, width, height, pageX, pageY) => {
             // picker position in the screen
-            this._pageX = pageX;
-            this._pageY = pageY;
+            this._pageX = pageX
+            this._pageY = pageY
           }
-        );
-    });
+        )
+    })
   };
 
   _computeHValue = (x, y) => {
-    const mx = this.state.pickerSize / 2;
-    const my = this.state.pickerSize / 2;
-    const dx = x - mx;
-    const dy = y - my;
-    const rad = Math.atan2(dx, dy) + Math.PI + Math.PI / 2;
-    return ((rad * 180) / Math.PI) % 360;
+    const mx = this.state.pickerSize / 2
+    const my = this.state.pickerSize / 2
+    const dx = x - mx
+    const dy = y - my
+    const rad = Math.atan2(dx, dy) + Math.PI + Math.PI / 2
+    return ((rad * 180) / Math.PI) % 360
   };
 
   _hValueToRad = deg => {
-    const rad = (deg * Math.PI) / 180;
-    return rad - Math.PI - Math.PI / 2;
+    const rad = (deg * Math.PI) / 180
+    return rad - Math.PI - Math.PI / 2
   };
 
-  componentWillMount() {
+  componentDidMount() {
     const handleColorChange = ({ x, y }) => {
-      const { s, v } = this._getColor();
-      const marginLeft = (this._layout.width - this.state.pickerSize) / 2;
-      const marginTop = (this._layout.height - this.state.pickerSize) / 2;
-      const relativeX = x - this._pageX - marginLeft;
-      const relativeY = y - this._pageY - marginTop;
-      const h = this._computeHValue(relativeX, relativeY);
-      this._onColorChange({ color: { h, s, v } });
-    };
+      const { s, v } = this._getColor()
+      const marginLeft = (this._layout.width - this.state.pickerSize) / 2
+      const marginTop = (this._layout.height - this.state.pickerSize) / 2
+      const relativeX = x - this._pageX - marginLeft
+      const relativeY = y - this._pageY - marginTop
+      const h = this._computeHValue(relativeX, relativeY)
+      this._onColorChange({ color: { h, s, v } })
+    }
     this._pickerResponder = createPanResponder({
       onStart: handleColorChange,
       onMove: handleColorChange,
-    });
+    })
   }
 
   generateSliders = () => {
-    const { sliderStyles, sliderConfig } = this.props;
-    const { sliders, labelStyle } = sliderConfig;
-    const { opacity } = this.state;
-    const color = this._getColor();
-    const { s: saturation, v: value } = color;
+    const { sliderStyles, sliderConfig } = this.props
+    const { sliders, labelStyle } = sliderConfig
+    const { opacity } = this.state
+    const color = this._getColor()
+    const { s: saturation, v: value } = color
     const options = {
       opacity,
       saturation,
       value,
-    };
+    }
     return sliders.map((slider, index) => {
-      const { type, hasLabels, labelText } = slider;
+      const { type, hasLabels, labelText } = slider
       if (type !== 'saturation' && type !== 'value' && type !== 'opacity') {
-        return null;
+        return null
       }
       return (
         <React.Fragment key={`${type}${index}`}>
@@ -215,22 +215,22 @@ export class HoloColorPicker extends React.PureComponent {
             onValueChange={val => this._onValueChange({ [type]: val })}
           />
         </React.Fragment>
-      );
-    });
+      )
+    })
   };
 
   render() {
-    const { pickerSize, opacity } = this.state;
+    const { pickerSize, opacity } = this.state
     const {
       oldColor,
       style,
       sliderConfig: { hasSliders },
-    } = this.props;
-    const color = this._getColor();
-    const { h, s, v } = color;
-    const angle = this._hValueToRad(h);
-    const selectedColor = tinycolor({ ...color, a: opacity }).toHex8String();
-    const indicatorColor = tinycolor({ h, s: 1, v: 1 }).toHexString();
+    } = this.props
+    const color = this._getColor()
+    const { h, s, v } = color
+    const angle = this._hValueToRad(h)
+    const selectedColor = tinycolor({ ...color, a: opacity }).toHex8String()
+    const indicatorColor = tinycolor({ h, s: 1, v: 1 }).toHexString()
     const computed = makeComputedStyles({
       pickerSize,
       selectedColor,
@@ -238,7 +238,7 @@ export class HoloColorPicker extends React.PureComponent {
       oldColor,
       angle,
       isRTL: this._isRTL,
-    });
+    })
     return (
       <View style={style}>
         <View
@@ -293,7 +293,7 @@ export class HoloColorPicker extends React.PureComponent {
           <View style={styles.sliderContainer}>{this.generateSliders()}</View>
         )}
       </View>
-    );
+    )
   }
 }
 
@@ -314,7 +314,7 @@ HoloColorPicker.propTypes = {
   hideSliders: PropTypes.bool,
   sliderConfig: PropTypes.object,
   sliderOptions: PropTypes.object,
-};
+}
 
 const makeComputedStyles = ({
   indicatorColor,
@@ -324,15 +324,15 @@ const makeComputedStyles = ({
   pickerSize,
   isRTL,
 }) => {
-  const summarySize = 0.5 * pickerSize;
-  const indicatorPickerRatio = 42 / 510; // computed from picker image
-  const indicatorSize = indicatorPickerRatio * pickerSize;
-  const pickerPadding = indicatorSize / 3;
-  const indicatorRadius = pickerSize / 2 - indicatorSize / 2 - pickerPadding;
-  const mx = pickerSize / 2;
-  const my = pickerSize / 2;
-  const dx = Math.cos(angle) * indicatorRadius;
-  const dy = Math.sin(angle) * indicatorRadius;
+  const summarySize = 0.5 * pickerSize
+  const indicatorPickerRatio = 42 / 510 // computed from picker image
+  const indicatorSize = indicatorPickerRatio * pickerSize
+  const pickerPadding = indicatorSize / 3
+  const indicatorRadius = pickerSize / 2 - indicatorSize / 2 - pickerPadding
+  const mx = pickerSize / 2
+  const my = pickerSize / 2
+  const dx = Math.cos(angle) * indicatorRadius
+  const dy = Math.sin(angle) * indicatorRadius
   return {
     picker: {
       padding: pickerPadding,
@@ -373,8 +373,8 @@ const makeComputedStyles = ({
       borderRadius: summarySize / 2,
       backgroundColor: selectedColor,
     },
-  };
-};
+  }
+}
 
 const styles = StyleSheet.create({
   sliderContainer: { flex: 1 },
@@ -416,4 +416,4 @@ const styles = StyleSheet.create({
   pickerAlignment: {
     alignItems: 'center',
   },
-});
+})

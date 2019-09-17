@@ -1,6 +1,6 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import Slider from 'react-native-slider'
+import React from 'react';
+import PropTypes from 'prop-types';
+import Slider from '@react-native-community/slider';
 import {
   TouchableOpacity,
   View,

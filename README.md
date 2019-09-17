@@ -13,11 +13,15 @@ React Native implementation of color picker for both Android and iOS.
 ## Getting started
 Install the color picker
 ```
-npm install react-native-color-picker --save
+npm install react-native-color-picker @react-native-community/slider
+ --save
 ```
 ```
-yarn add react-native-color-picker
+yarn add react-native-color-picker @react-native-community/slider
 ```
+
+You must then either run `react-native link @react-native-community/slider`
+or if you are on react-native 0.60+ run the auto-linking scripts.
 
 And use it in your application
 ```javascript

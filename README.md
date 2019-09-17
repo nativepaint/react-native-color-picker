@@ -23,6 +23,15 @@ yarn add react-native-color-picker @react-native-community/slider
 You must then either run `react-native link @react-native-community/slider`
 or if you are on react-native 0.60+ run the auto-linking scripts.
 
+### React 0.60+ solution
+```
+$ react-native link @react-native-community/slider
+$ cd ios/
+$ pod install
+$ cd ..
+$ npm run run:ios
+```
+
 And use it in your application
 ```javascript
 import { ColorPicker } from 'react-native-color-picker'
